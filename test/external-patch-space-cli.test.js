@@ -20,6 +20,25 @@ describe('external patch space CLI integration', function() {
 			if (bytes[0] !== 'copy') assert(bytes.every(b => Number.isInteger(b) && b >= 0 && b <= 255));
 	});
 	for (const mode of Object.keys(pinnedHashes)) {
+		it(`${mode} supports the audited heart/penalty flags without reservation collisions`, function() {
+			for (let mask = 0; mask < 4; mask++) {
+				const flags = [mode];
+				if (mask & 1) flags.push('100-hearts');
+				if (mask & 2) flags.push('penalty-reduction');
+				const result = JSON.parse(execFileSync(process.execPath, [path.join(__dirname, '../bin/cv2r'),
+					'--json', '--seed', 'QoLFlagAudit', '--logic', 'standard', '--palette', 'simons-quest',
+					'--simon', 'simon', '--patch', flags.join(','), '--external-patch-space'],
+				{encoding: 'utf8', maxBuffer: 4 * 1024 * 1024, windowsHide: true}));
+				const rom = Buffer.alloc(262160);
+				for (const op of result.patch) for (const [offset, bytes] of Object.entries(op)) {
+					if (bytes[0] === 'copy') rom.copyWithin(bytes[2], Number(offset), Number(offset) + bytes[1]);
+					else Buffer.from(bytes).copy(rom, Number(offset));
+				}
+				for (const range of result.externalPatchSpace.prg)
+					assert(rom.subarray(range.fileOffset, range.fileOffset + range.length).every(b => b === 255));
+				if (mask & 1) assert.equal(rom[0x42B9], 0xB0);
+			}
+		});
 		it(`${mode} preserves ordinary output and leaves every reserved byte FF`, function() {
 			const args = [path.join(__dirname, '../bin/cv2r'), '--json', '--seed', 'TornadoAudit0',
 				'--logic', 'standard', '--palette', 'simons-quest', '--simon', 'simon', '--patch', mode];

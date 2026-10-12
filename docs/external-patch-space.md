@@ -3,8 +3,11 @@
 The owned fork can reserve space for a separately maintained patch applied
 after CV2R. This facility contains no external gameplay logic.
 
-Use `--external-patch-space` with exactly `--patch town-rando` or
-`--patch map-rando`. Other optional combinations are rejected until audited.
+Use `--external-patch-space` with exactly one world mode, `town-rando` or
+`map-rando`. The audited optional additions are `100-hearts` and
+`penalty-reduction`, individually or together. For example:
+`--patch map-rando,100-hearts,penalty-reduction --external-patch-space`.
+Duplicate flags, two world modes, and other combinations are rejected until audited.
 Without the flag, existing generation and patch output remain unchanged.
 
 | Resource | External owner | CV2R allocation limit |
