@@ -6,6 +6,11 @@ Also, you can skip this repository entirely if you just want to generate a seed 
 
 ## supported platforms
 
+This fork also offers an opt-in [external patch space contract](docs/external-patch-space.md)
+for separately maintained post-generation patches. `--external-patch-space`
+reserves PRG/RAM and emits metadata for the supported Town/Map profiles;
+ordinary generation is unchanged. No external mod gameplay code is included.
+
 * NES console
 * [NT Mini](https://www.analogue.co/nt-mini/)
 * [fceux](http://www.fceux.com/web/home.html)

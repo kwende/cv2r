@@ -10,7 +10,7 @@
 const { bank, utils: { modBytes } } = require('../../lib');
 
 module.exports = {
-	patch: function (patchGroup) {
+	patch: function (patchGroup, opts) {
 		// Note about bank ranges:
 		// beginning point is inclusive, endpoint is exclusive.
 
@@ -30,7 +30,7 @@ module.exports = {
 		patchGroup.add([ mod.ram & 0xff, mod.ram >>> 8 ], 0x2000c);
 
 		// move the endpoint for bank 7, and ignore the useless identifier bytes too.
-		bank[7].ram.end = 0xFFF9;  // was 0xFFCE
-		bank[7].rom.end = 0x20009; // was 0x1FFDE
+		bank[7].ram.end = opts.externalPatchSpace ? 0xFF80 : 0xFFF9;
+		bank[7].rom.end = opts.externalPatchSpace ? 0x1FF90 : 0x20009;
 	}
 }

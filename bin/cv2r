@@ -25,6 +25,7 @@ program
 	.description(`${yellow('Castlevania II: Simon\'s Quest Randomizer')} by ${red('Blood')}${cyan('Sweat')}And${green('Code')}`)
 	.usage('[options] [vanilla_rom_file]')
 	.option('-j, --json', 'output patch and spoiler as json, disables all other output')
+    .option('--external-patch-space', 'reserve cv2-external-v1 PRG/RAM space for a later patch (Town/Map only)')
 	.option('-l, --logic <logic>', 'logic to be applied to itemization')
 	.option('-o, --output <output>', 'filepath for randomized rom output')
 	.option('-p, --palette <palette>', 'palette for the game, see list below', 'simons-quest')
