@@ -9,6 +9,16 @@ describe('external patch space CLI integration', function() {
 		'town-rando': '9225a4769399ec7d6ba4debeea6cce1d92dc073f7b194d78534f85276a8d55b8',
 		'map-rando': 'd38d9eefe26f4caeff59bb00c0ce782dec6cd0024d3d6e7e3656366bfe540e6b'
 	};
+	it('Town negative height displacement emits FF instead of a signed JSON byte', function() {
+		const result = JSON.parse(execFileSync(process.execPath, [path.join(__dirname, '../bin/cv2r'),
+			'--json', '--seed', 'TornadoAudit1', '--logic', 'standard', '--palette', 'simons-quest',
+			'--simon', 'simon', '--patch', 'town-rando', '--external-patch-space'],
+		{encoding: 'utf8', maxBuffer: 4 * 1024 * 1024, windowsHide: true}));
+		const height = result.patch.flatMap(op => Object.entries(op)).find(([offset]) => Number(offset) === 0xA6F8);
+		assert.deepEqual(height[1], [255]);
+		for (const op of result.patch) for (const bytes of Object.values(op))
+			if (bytes[0] !== 'copy') assert(bytes.every(b => Number.isInteger(b) && b >= 0 && b <= 255));
+	});
 	for (const mode of Object.keys(pinnedHashes)) {
 		it(`${mode} preserves ordinary output and leaves every reserved byte FF`, function() {
 			const args = [path.join(__dirname, '../bin/cv2r'), '--json', '--seed', 'TornadoAudit0',

@@ -280,7 +280,9 @@ function copytown (town1, town2, pm, logic){
         if (towns[town1].leftheightoffset > 0) {
 			
 			var value=towns[town2].height-towns[town1].leftheight;
-			pm.add([value] , towns[town1].leftheightoffset);
+			// ROM output already coerces signed displacements to uint8. Emit
+			// that same byte in JSON so strict external patch clients can use it.
+			pm.add([value & 0xFF] , towns[town1].leftheightoffset);
 			leftvalue[0]=0xff;
 			
 		}
