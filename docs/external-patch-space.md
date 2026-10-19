@@ -4,9 +4,10 @@ The owned fork can reserve space for a separately maintained patch applied
 after CV2R. This facility contains no external gameplay logic.
 
 Use `--external-patch-space` with exactly one world mode, `town-rando` or
-`map-rando`. The audited optional additions are `100-hearts` and
-`penalty-reduction`, individually or together. For example:
-`--patch map-rando,100-hearts,penalty-reduction --external-patch-space`.
+`map-rando`. The audited optional additions are `100-hearts`,
+`penalty-reduction`, `enemizer`, `enemy-hp` and `price-rando`, independently or
+in combination. For example:
+`--patch map-rando,enemizer,enemy-hp,price-rando --external-patch-space`.
 Duplicate flags, two world modes, and other combinations are rejected until audited.
 Without the flag, existing generation and patch output remain unchanged.
 
@@ -33,6 +34,16 @@ RAM audit for the supported core/Town/Map profile found60F0-60F1 outside core
 scratch, warp state, check records and statistics. The existing startup loop
 clears6000-60FF, including the reservation. Later patches must respect this
 ownership; adding optional profiles requires another RAM/hook audit.
+
+The enemy/HP/price additions reuse CV2R's existing optional patches. Enemizer
+writes actor records, a per-location pattern table and the pattern resolver
+hook at file 1CCDF, with its worker at 07860; its assembly preserves scratch
+52/53 and uses 0102, not the external RAM. Enemy HP writes actor HP bytes;
+prices write itemizer-owned merchant sale records. None owns 60F0/60F1.
+CLI tests cover all 32 optional combinations in both world modes, enforce the
+existing reservation collision checks and retain the ordinary-output hashes.
+The external CV2 implementation separately checks its gameplay hook ranges.
+These checks do not establish all-seed or full-game playability.
 
 Run focused tests with:
 

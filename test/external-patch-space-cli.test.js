@@ -4,7 +4,7 @@ const {createHash} = require('crypto');
 const path = require('path');
 
 describe('external patch space CLI integration', function() {
-	this.timeout(20000);
+	this.timeout(60000);
 	const pinnedHashes = {
 		'town-rando': '9225a4769399ec7d6ba4debeea6cce1d92dc073f7b194d78534f85276a8d55b8',
 		'map-rando': 'd38d9eefe26f4caeff59bb00c0ce782dec6cd0024d3d6e7e3656366bfe540e6b'
@@ -20,11 +20,11 @@ describe('external patch space CLI integration', function() {
 			if (bytes[0] !== 'copy') assert(bytes.every(b => Number.isInteger(b) && b >= 0 && b <= 255));
 	});
 	for (const mode of Object.keys(pinnedHashes)) {
-		it(`${mode} supports the audited heart/penalty flags without reservation collisions`, function() {
-			for (let mask = 0; mask < 4; mask++) {
+		it(`${mode} supports all audited flags without reservation collisions`, function() {
+			const optional = ['100-hearts', 'penalty-reduction', 'enemizer', 'enemy-hp', 'price-rando'];
+			for (let mask = 0; mask < 32; mask++) {
 				const flags = [mode];
-				if (mask & 1) flags.push('100-hearts');
-				if (mask & 2) flags.push('penalty-reduction');
+				optional.forEach((id, bit) => { if (mask & (1 << bit)) flags.push(id); });
 				const result = JSON.parse(execFileSync(process.execPath, [path.join(__dirname, '../bin/cv2r'),
 					'--json', '--seed', 'QoLFlagAudit', '--logic', 'standard', '--palette', 'simons-quest',
 					'--simon', 'simon', '--patch', flags.join(','), '--external-patch-space'],
