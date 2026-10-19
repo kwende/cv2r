@@ -13,11 +13,11 @@ describe('external patch space contract', function() {
 		assert.throws(() => space.configure(banks, [{id: '100-hearts'}]));
 		assert.throws(() => space.configure(banks, [{id: 'town-rando'}, {id: '100-hearts'}, {id: '100-hearts'}]));
 	});
-	it('accepts either world with each audited quality-of-life combination', function() {
-		for (const world of ['town-rando', 'map-rando']) for (let mask = 0; mask < 4; mask++) {
+	it('accepts either world with every audited randomization and quality-of-life combination', function() {
+		const optional = ['100-hearts', 'penalty-reduction', 'enemizer', 'enemy-hp', 'price-rando'];
+		for (const world of ['town-rando', 'map-rando']) for (let mask = 0; mask < 32; mask++) {
 			const ids = [world];
-			if (mask & 1) ids.push('100-hearts');
-			if (mask & 2) ids.push('penalty-reduction');
+			optional.forEach((id, bit) => { if (mask & (1 << bit)) ids.push(id); });
 			const banks = Array.from({length: 8}, () => ({ram: {}, rom: {}}));
 			space.configure(banks, ids.map(id => ({id})));
 			assert.equal(banks[1].ram.end, 0xBD00);
